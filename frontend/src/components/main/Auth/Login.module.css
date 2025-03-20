@@ -1,0 +1,107 @@
+.authForm {
+  width: 100%;
+}
+
+.authForm,
+.auth {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth {
+  flex-direction: column;
+  width: 70%;
+  border: 1px solid var(--border-color);
+  padding: 4em 6em;
+}
+
+.auth h3 {
+  font-size: 2.8rem;
+  font-weight: 400;
+  text-align: center;
+}
+
+.auth p {
+  font-size: 1.4rem;
+  color: var(--text-color-alt);
+  margin-block: 0.5em;
+  text-align: center;
+}
+
+.auth form {
+  width: 100%;
+  margin-top: 3em;
+}
+
+.auth form input {
+  border: 1px solid var(--border-color);
+  width: 100%;
+  font-size: 1.4rem;
+  padding: 1em;
+  margin-bottom: 2.3em;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.4em;
+}
+
+.buttons button {
+  background-color: var(--bg-color);
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 500;
+  padding: 0.8em 2em;
+  cursor: pointer;
+  min-width: 100px;
+}
+
+.buttons span,
+.auth form a {
+  color: var(--text-color);
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.buttons span {
+  text-align: right;
+}
+
+.authRegister {
+  padding: 2em 6em;
+}
+
+.authRegister .buttons {
+  margin: 0;
+}
+
+.authRegister .buttons a {
+  color: var(--text-color);
+  font-size: 1.4rem;
+  cursor: pointer;
+  text-align: right;
+}
+
+
+@media (max-width: 992px){
+  .auth {
+    width: 80%;
+    padding: 2.5em 4em;
+  }
+}
+
+@media (max-width: 768px){
+  .auth {
+    width: 85%;
+  }
+} 
+
+@media (max-width: 600px){
+  .auth {
+    width: 80%;
+    
+  }
+} 

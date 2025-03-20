@@ -1,0 +1,119 @@
+#header_area {
+  width: 100%;
+  background-color: var(--bg-color);
+  
+}
+
+.container {
+  width: 95%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-block: 1em;
+  
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 5em;
+}
+
+.brand{
+  min-width: 90px;
+}
+
+.header form {
+  width: 40%;
+  max-width: 400px;
+  position: relative;
+  font-size: 1rem;
+}
+
+.header form input {
+  background-color: #fff;
+  width: 100%;
+  padding: 0.8em 1.5em;
+  border-radius: 0.3em;
+}
+
+.header form button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  background-color: var(--primary-color);
+  padding-inline: 1em;
+
+  border-radius: 0 0.3em 0.3em 0;
+  color: #fff;
+}
+
+.header nav {
+  display: flex;
+  gap: 1.8em;
+}
+
+.navigate,
+.navigate a {
+  color: #fff;
+  font-size: 1.4rem;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.navigate i {
+  color: var(--primary-color);
+  margin-right: 0.4em;
+  font-size: 2.4rem;
+}
+
+.wishlistNum {
+  width: 1em;
+  height: 1em;
+  background-color: var(--secondary-color);
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.7em;
+  border-radius: 100%;
+  position: absolute;
+  bottom: -0.1em;
+  left: -0.4em;
+  color: var(--text-color);
+}
+
+
+
+@media (max-width: 992px) {
+  html {
+    font-size: 10px;
+  }
+  .brand {
+    width: 15%;
+  }
+  .header nav {
+    gap: 0.5em;
+  }
+
+  .header form {
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 600px) {
+  .header nav {
+    gap: 1.2em;
+  }
+
+  .navigate span {
+    display: none;
+  }
+
+  .navigate i {
+    margin: 0;
+  }
+}

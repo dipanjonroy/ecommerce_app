@@ -1,0 +1,56 @@
+:root{
+  --primary-color: #E52C2C;
+  --secondary-color: #F7CE51;
+  --text-color: #2f333A;
+  --text-color-alt: #666;
+  --bg-color: #2f333A;
+  --border-color: #666;
+}
+
+html {
+  font-size: 10px;
+}
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  
+}
+
+body {
+  background-color: #fff;
+  color: #2f333A;
+  font-family: "Lora", serif;
+  line-height: normal;
+  
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Poppins", sans-serif;
+  color: #2f333A;
+}
+
+a {
+  text-decoration: none;
+}
+
+img{
+  max-width: 100%;
+}
+
+input,
+button,
+textarea {
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+li {
+  list-style: none;
+}
