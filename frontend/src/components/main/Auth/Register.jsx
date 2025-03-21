@@ -1,12 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import css from "./Login.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {useDispatch, useSelector} from "react-redux";
+import { userRegister } from "../../../store/userAuthSlice";
+import { errorMessage, successMessage } from "../../../helper";
 
 function Register() {
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const {data, error} = useSelector((store)=>store.userAuth);
+
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,8 +26,17 @@ function Register() {
       password,
     };
 
-    console.log(formData);
+    dispatch(userRegister(formData));
   };
+
+  useEffect(()=>{
+    if(data?.success){
+      successMessage(data?.message);
+      navigate("/login")
+    } else {
+      errorMessage(error)
+    }
+  },[data, error])
 
   return (
     <div className={css.authForm}>

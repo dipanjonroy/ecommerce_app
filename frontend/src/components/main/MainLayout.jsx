@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Header from "./header";
 import Footer from "./footer";
+import { ToastContainer } from "react-toastify";
 
 function MainLayout() {
   return (
@@ -8,6 +9,7 @@ function MainLayout() {
       <Header />
       <Outlet />
       <Footer />
+      <ToastContainer/>
     </div>
   );
 }

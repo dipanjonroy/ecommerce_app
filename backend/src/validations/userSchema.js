@@ -1,19 +1,19 @@
 const Joi = require("joi");
 
 module.exports.userRegisterSchema = Joi.object({
-  firstname: Joi.string.trim().min(3).max(50).required().messages({
+  firstname: Joi.string().trim().min(3).max(50).required().messages({
     "any.required": "Firstname is required.",
     "string.min": "Firstname must be at least 3 characters long.",
     "string.max": "Firstname will be maximum 50 characters long.",
   }),
 
-  lastname: Joi.string.trim().min(3).max(50).required().messages({
+  lastname: Joi.string().trim().min(3).max(50).required().messages({
     "any.required": "Lastname is required.",
     "string.min": "Lastname must be at least 3 characters long.",
     "string.max": "Lastname will be maximum 50 characters long.",
   }),
 
-  email: Joi.string().trim().unique().email().required().messages({
+  email: Joi.string().trim().email().required().messages({
     "any.required": "Email is required.",
     "string.email": "Email is not valid.",
   }),
