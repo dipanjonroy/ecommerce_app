@@ -38,3 +38,15 @@ module.exports.userRegisterSchema = Joi.object({
   isAdmin: Joi.boolean(),
   isBanned: Joi.boolean(),
 });
+
+module.exports.userLoginSchema = Joi.object({
+  email: Joi.string().email().required().trim().messages({
+    "any.required": "Email is required.",
+    "string.email": "Email is not valid."
+  }),
+
+  password: Joi.string().min(6).required().messages({
+    "any.string": "Password is required.",
+    "string.min":"Password must be at least 6 characters long."
+  })
+})

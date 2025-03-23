@@ -13,8 +13,8 @@ import UnAuth from "./pages/common/unauth";
 import NotFound from "./pages/common/notfound";
 
 function App() {
-  const isAuth = true;
-  const user = { isAdmin: true };
+  const isAuth = false;
+  const user = { isAdmin: false };
   return (
     <>
       <BrowserRouter>
