@@ -10,7 +10,7 @@ module.exports.isLoggedIn = (req, res, next) => {
 
   const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_TOKEN_KEY);
 
-  const userId = decoded?.user;
+  const userId = decoded?.userId;
 
   req.userId = userId;
 

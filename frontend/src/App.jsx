@@ -1,4 +1,4 @@
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route, BrowserRouter, useNavigate } from "react-router-dom";
 import Homepage from "./pages/main/Homepage";
 import AuthLayout from "./components/main/Auth/AuthLayout";
 import Register from "./components/main/Auth/Register";
@@ -11,10 +11,25 @@ import UserProfile from "./pages/main/Profile";
 import AuthChecker from "./components/common/CheckAuth";
 import UnAuth from "./pages/common/unauth";
 import NotFound from "./pages/common/notfound";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { userProfile } from "./store/userAuthSlice";
 
 function App() {
-  const isAuth = false;
-  const user = { isAdmin: false };
+  const accessToken = localStorage.getItem("accessToken");
+
+  const { loading, success, data } = useSelector((store) => store.userAuth);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (accessToken) {
+      dispatch(userProfile());
+    }
+  }, [accessToken, dispatch]);
+
+  
+
   return (
     <>
       <BrowserRouter>
@@ -22,7 +37,14 @@ function App() {
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Homepage />} />
 
-            <Route path="/" element={<AuthChecker isAuthenticated={isAuth} user={user}><AuthLayout /></AuthChecker>}>
+            <Route
+              path="/"
+              element={
+                <AuthChecker isAuthenticated={success} user={data} loading={loading}>
+                  <AuthLayout />
+                </AuthChecker>
+              }
+            >
               <Route path="register" element={<Register />} />
               <Route path="login" element={<Login />} />
             </Route>
@@ -30,7 +52,7 @@ function App() {
             <Route
               path="/profile"
               element={
-                <AuthChecker isAuthenticated={isAuth} user={user}>
+                <AuthChecker isAuthenticated={success} user={data} loading={loading}>
                   <UserProfile />
                 </AuthChecker>
               }
@@ -40,7 +62,7 @@ function App() {
           <Route
             path="/admin"
             element={
-              <AuthChecker isAuthenticated={isAuth} user={user}>
+              <AuthChecker isAuthenticated={success} user={data} loading={loading}>
                 <AdminLayout />
               </AuthChecker>
             }
@@ -48,8 +70,8 @@ function App() {
             <Route path="dashboard" element={<AdminDashboard />} />
           </Route>
 
-          <Route path="/unauthorized" element={<UnAuth/>}/>
-          <Route path="*" element={<NotFound/>}/>
+          <Route path="/unauthorized" element={<UnAuth />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </>

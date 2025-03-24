@@ -23,31 +23,37 @@ module.exports.userRegisterController = async (req, res) => {
 module.exports.userLoginController = async (req, res) => {
   const data = req.body;
 
-  const user = await userLoginService(data);
+  const {userId, isAdmin} = await userLoginService(data);
 
   const accessToken = createToken(
-    { user },
+    { userId },
     process.env.JWT_ACCESS_TOKEN_KEY,
-    "1h"
+    "5m"
   );
 
   res.cookie("accessToken", accessToken, {
-    withCredentials: true,
-    httpOnly: false,
+    maxAge: 1000*60*5,
+    httpOnly: true,
+    secure: false,
   });
 
   const refreshToken = createToken(
-    { user },
+    { userId },
     process.env.JWT_REFRESH_TOKEN_KEY,
     "7d"
   );
   res.cookie("refreshToken", refreshToken, {
+    maxAge: 1000*60*60*24*7,
     withCredentials: true,
-    httpOnly: false,
+    httpOnly: true,
+    secure: false,
   });
 
   res.status(201).json({
     success: true,
+    accessToken,
+    refreshToken,
+    isAdmin,
     message: "Logged in successfully.",
   });
 };

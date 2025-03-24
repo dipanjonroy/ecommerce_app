@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import css from "./Login.module.css";
-import { useEffect, useState } from "react";
-import {useDispatch, useSelector} from "react-redux";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { userRegister } from "../../../store/userAuthSlice";
 import { errorMessage, successMessage } from "../../../helper";
 
@@ -11,7 +11,6 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const {data, error} = useSelector((store)=>store.userAuth);
 
   const dispatch = useDispatch();
 
@@ -26,17 +25,16 @@ function Register() {
       password,
     };
 
-    dispatch(userRegister(formData));
+    dispatch(userRegister(formData)).then((data)=>{
+      if(data?.payload?.success){
+        successMessage(data?.payload?.message);
+        navigate("/login")
+      } else {
+        errorMessage(data?.payload?.message)
+      }
+    });
   };
 
-  useEffect(()=>{
-    if(data?.success){
-      successMessage(data?.message);
-      navigate("/login")
-    } else {
-      errorMessage(error)
-    }
-  },[data, error])
 
   return (
     <div className={css.authForm}>

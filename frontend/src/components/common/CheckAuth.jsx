@@ -1,37 +1,32 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function AuthChecker({ isAuthenticated, user, children }) {
   const location = useLocation();
+  const navigate = useNavigate()
 
-  if(!isAuthenticated){
-    if(location.pathname === "/profile" || location.pathname.includes("admin")){
-      return <Navigate to="/login"/>
-    }
-  }
-
-  if(isAuthenticated) {
-
-   if(location.pathname ==="/profile"){
+  useEffect(()=>{
+    if(isAuthenticated){
       if(user?.isAdmin){
-        return <Navigate to="/admin/dashboard"/>
-      } 
-    }
+        if(location.pathname.includes("profile") || location.pathname.includes("login") || location.pathname.includes("register")){
+          navigate("/admin/dashboard", { replace: true })
+        }
+      }
 
-    if(location.pathname.includes("admin")){
       if(!user?.isAdmin){
-        return <Navigate to="/unauthorized"/>
+        if(location.pathname.includes("admin") || location.pathname.includes("login") || location.pathname.includes("register")){
+          navigate("/",{ replace: true })
+        }
       }
     }
 
-    if(location.pathname ==="/login" || location.pathname === "/register"){
-      if(user?.isAdmin){
-        return <Navigate to="/admin/dashboard"/>
-      } else {
-        return <Navigate to="/"/>
+    if(!isAuthenticated){
+      if(location.pathname.includes("profile") || location.pathname.includes("admin")){
+        navigate("/login",{ replace: true })
       }
     }
-  }
-
+  },[isAuthenticated, user, location.pathname, navigate])
+  
   return <>{children}</>;
 }
 

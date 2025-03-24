@@ -40,7 +40,7 @@ module.exports.userLoginService = async (data) => {
   const userId = user._id;
 
   
-  return userId;
+  return {userId, isAdmin: user.isAdmin};
 };
 
 module.exports.userProfileService = async(id)=>{

@@ -1,8 +1,19 @@
 import { Link } from "react-router-dom";
 import css from "./Header.module.css";
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 
 function Header() {
-  const isAuth = false;
+ 
+  const [isAuth, setIsAuth] = useState(false);
+
+  const {success, data} = useSelector((store)=>store.userAuth);
+
+  useEffect(()=>{
+    if(success){
+      setIsAuth(true)
+    }
+  })
 
   return (
     <header id={css.header_area}>
@@ -30,7 +41,7 @@ function Header() {
             {isAuth ? (
               <div className={css.navigate}>
                 <i className="ri-user-line"></i>
-                <span>Dipanjon</span>
+                <span>{data?.firstname}</span>
               </div>
             ) : (
               <div className={css.navigate}>

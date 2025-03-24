@@ -1,21 +1,64 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import api from "../helper";
 
 const initialState = {
   loading: false,
+  success: false,
   data: null,
-  user: null,
-  error: false,
+  error: null,
 };
 
 export const userRegister = createAsyncThunk(
-  "user-register",
+  "user/register",
   async (userData, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(
         `${import.meta.env.VITE_SERVER_URL}/user/register`,
         userData,
         { withCredentials: true }
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const userLogin = createAsyncThunk(
+  "user/login",
+  async (data, { rejectWithValue }) => {
+    const { email, password } = data;
+
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_SERVER_URL}/user/login`,
+        { email, password },
+        { withCredentials: true }
+      );
+      localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
+      localStorage.setItem("refreshToken", JSON.stringify(data.refreshToken))
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const userProfile = createAsyncThunk(
+  "user/profile",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await api.get(
+        `${import.meta.env.VITE_SERVER_URL}/user/profile`,
+        {
+          withCredentials: true,
+          headers: {
+            "Cache-Control":
+              "no-store, no-cache, must-revalidate, proxy-revalidate",
+          },
+        }
       );
       return data;
     } catch (error) {
@@ -33,11 +76,34 @@ const userAuthSlice = createSlice({
       .addCase(userRegister.pending, (state) => {
         state.loading = true;
       })
-      .addCase(userRegister.fulfilled, (state, action) => {
+      .addCase(userRegister.fulfilled, (state) => {
         state.loading = false;
-        state.data = action.payload;
       })
       .addCase(userRegister.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(userLogin.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(userLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = action.payload.success;
+      })
+      .addCase(userLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(userProfile.pending, (state) => {
+        state.loading = true;
+        state.success = false;
+      })
+      .addCase(userProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = action.payload.success;
+        state.data = action.payload.profile;
+      })
+      .addCase(userProfile.rejected, (state, action) => {
         state.loading = false;
         state.data = null;
         state.error = action.payload;

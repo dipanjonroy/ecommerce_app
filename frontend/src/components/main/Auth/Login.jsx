@@ -1,23 +1,48 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import css from "./Login.module.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { userLogin, userProfile } from "../../../store/userAuthSlice";
+import { errorMessage, successMessage } from "../../../helper";
 
 function Login() {
   const [forgetPass, setForgetPass] = useState(false);
 
+  const { success, data } = useSelector((store) => store.userAuth);
+
   const [email, setEmail] = useState("");
+
   const [password, setPassword] = useState("");
+
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
+
     const loginData = {
       email,
       password,
     };
 
-    console.log(loginData);
-  };
+    dispatch(userLogin(loginData))
+      .then((data) => {
+        if (data?.payload?.success) {
+          successMessage(data?.payload?.message);
+        }
 
+        if(data?.payload?.isAdmin){
+          navigate("/admin/dashboard", { replace: true });
+        } else {
+          navigate("/", { replace: true });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  
   return (
     <div className={css.authForm}>
       {forgetPass ? (
