@@ -1,6 +1,8 @@
 const User = require("../models/UserModel");
 const ExpressError = require("../utility/expressError");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 
 module.exports.userRegisterService = async (data) => {
   const { firstname, lastname, email, password } = data;
@@ -51,4 +53,20 @@ module.exports.userProfileService = async(id)=>{
   }
 
   return user;
+}
+
+module.exports.refreshTokenService = async(token)=>{
+  if(!token){
+    throw new ExpressError(401, "Refresh token is expired, please log in.")
+  }
+
+  const decode = await jwt.verify(token, process.env.JWT_REFRESH_TOKEN_KEY);
+
+  const isUser = await User.exists({_id: decode?.userId});
+
+  if(!isUser){
+    throw new ExpressError(401, "User is not exist.")
+  }
+
+  return decode?.userId;
 }

@@ -2,8 +2,10 @@ const {
   userRegisterService,
   userLoginService,
   userProfileService,
-} = require("../services/userService");
+  refreshTokenService,
+} = require("../services/authService");
 const { createToken } = require("../utility/createToken");
+const ExpressError = require("../utility/expressError");
 
 module.exports.userRegisterController = async (req, res) => {
   const { firstname, lastname, email, password } = req.body;
@@ -78,3 +80,25 @@ module.exports.userProfileController = async (req, res) => {
     profile,
   });
 };
+
+module.exports.refreshTokenController = async(req,res)=>{
+  const {refreshtoken} =req.body;
+  
+  const userId = await refreshTokenService(refreshtoken);
+
+  const accessToken = createToken(
+    { userId },
+    process.env.JWT_ACCESS_TOKEN_KEY,
+    "5m"
+  );
+
+  res.cookie("accessToken", accessToken, {
+    maxAge: 1000*60*5,
+    httpOnly: true,
+    secure: false,
+  });
+
+  res.status(201).json({
+    accessToken
+  })
+}

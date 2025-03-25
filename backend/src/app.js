@@ -6,7 +6,7 @@ const cors = require("cors");
 const connectToDB = require("./dbConfig/connectToDb");
 const ExpressError = require("../../../Uber/backend/src/utility/expresserror");
 
-const userRoutes = require("./routes/userRoute");
+const authRoutes = require("./routes/authRoute");
 
 connectToDB();
 
@@ -32,7 +32,7 @@ app.use(
 );
 
 //Handle Routes
-app.use("/api/user", userRoutes);
+app.use("/api/auth", authRoutes);
 
 //Error handeling
 

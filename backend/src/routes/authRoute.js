@@ -9,7 +9,8 @@ const {
   userLoginController,
   userLogOutController,
   userProfileController,
-} = require("../controllers/userController");
+  refreshTokenController,
+} = require("../controllers/authController");
 const { isLoggedIn, isLoggedOut } = require("../middlewares/checkAuth");
 
 const router = express.Router();
@@ -23,5 +24,7 @@ router.route("/login").post(isLoggedOut,userLoginValidator, wrapAsync(userLoginC
 router.route("/logout").get(isLoggedIn, wrapAsync(userLogOutController));
 
 router.route("/profile").get(isLoggedIn, wrapAsync(userProfileController));
+
+router.route("/refreshtoken").post(wrapAsync(refreshTokenController))
 
 module.exports = router;
