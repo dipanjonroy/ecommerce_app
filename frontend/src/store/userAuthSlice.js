@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import api from "../helper";
+//import api from "./api";
 
 const initialState = {
   loading: false,
-  success: false,
-  data: null,
+  isAuthenticated: false,
+  isInitialized: false,
+  userData: null,
   error: null,
 };
 
@@ -27,17 +28,13 @@ export const userRegister = createAsyncThunk(
 
 export const userLogin = createAsyncThunk(
   "user/login",
-  async (data, { rejectWithValue }) => {
-    const { email, password } = data;
-
+  async (loginData, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(
         `${import.meta.env.VITE_SERVER_URL}/auth/login`,
-        { email, password },
+        loginData,
         { withCredentials: true }
       );
-      localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
-      localStorage.setItem("refreshToken", JSON.stringify(data.refreshToken))
 
       return data;
     } catch (error) {
@@ -46,23 +43,49 @@ export const userLogin = createAsyncThunk(
   }
 );
 
-export const userProfile = createAsyncThunk(
-  "user/profile",
+export const authChecker = createAsyncThunk(
+  "auth/check",
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await api.get(
+      const { data } = await axios.get(
         `${import.meta.env.VITE_SERVER_URL}/auth/profile`,
-        {
-          withCredentials: true,
-          headers: {
-            "Cache-Control":
-              "no-store, no-cache, must-revalidate, proxy-revalidate",
-          },
-        }
+        { withCredentials: true }
       );
       return data;
     } catch (error) {
       return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const logOut = createAsyncThunk(
+  "logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/auth/profile`,
+        { withCredentials: true }
+      );
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message);
+    }
+  }
+);
+
+export const refreshToken = createAsyncThunk(
+  "auth/refreshtoken",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/auth/refreshtoken`,
+        { withCredentials: true }
+      );
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -70,45 +93,112 @@ export const userProfile = createAsyncThunk(
 const userAuthSlice = createSlice({
   name: "userAuth",
   initialState,
-  reducers: {},
+  reducers: {
+    clearAuthState: (state) => {
+      state.loading = false;
+      state.isAuthenticated = false;
+      isInitialized = false;
+      state.userData = null;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
+      // Register cases
       .addCase(userRegister.pending, (state) => {
         state.loading = true;
       })
-      .addCase(userRegister.fulfilled, (state) => {
+      .addCase(userRegister.fulfilled, (state, action) => {
         state.loading = false;
+        state.isAuthenticated = false;
+        state.userData = action.payload;
       })
       .addCase(userRegister.rejected, (state, action) => {
         state.loading = false;
+        state.isAuthenticated = false;
+        state.userData = null;
         state.error = action.payload;
       })
+
+      //Login cases
       .addCase(userLogin.pending, (state) => {
         state.loading = true;
+        state.isAuthenticated = false;
+        state.userData = null;
+        state.error = null;
       })
+
       .addCase(userLogin.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = action.payload.success;
+        state.isAuthenticated = action.payload?.success;
+        state.userData = action.payload;
       })
+
       .addCase(userLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.userData = null;
+        state.error = action.payload;
+      })
+
+      //Auth cases
+      .addCase(authChecker.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(authChecker.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.isInitialized = true;
+        state.userData = action.payload.profile;
+      })
+
+      .addCase(authChecker.rejected, (state, action) => {
+        state.loading = false;
+        state.isInitialized = true;
+        state.isAuthenticated = false;
+        state.userData = null;
+        state.error = action.payload;
+      })
+
+      //Logout cases
+      .addCase(logOut.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(logOut.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.isInitialized = false;
+        state.userData = action.payload;
+      })
+
+      .addCase(logOut.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(userProfile.pending, (state) => {
+
+      //Refresh Token cases
+      .addCase(refreshToken.pending, (state) => {
         state.loading = true;
-        state.success = false;
       })
-      .addCase(userProfile.fulfilled, (state, action) => {
+
+      .addCase(refreshToken.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = action.payload.success;
-        state.data = action.payload.profile;
+        state.isAuthenticated = true;
+        state.isInitialized = true;
+        state.userData = null;
       })
-      .addCase(userProfile.rejected, (state, action) => {
+
+      .addCase(refreshToken.rejected, (state, action) => {
         state.loading = false;
-        state.data = null;
+        state.isAuthenticated = false;
+        state.isInitialized = true;
+        state.userData = null;
         state.error = action.payload;
       });
   },
 });
 
 export default userAuthSlice.reducer;
+export const { clearAuthState } = userAuthSlice.actions;

@@ -28,6 +28,7 @@ module.exports.userRegisterSchema = Joi.object({
     )
     .messages({
       "any.required": "Password is required.",
+      "string.min" : "Password must be at least 6 characters long.",
       "string.pattern.base":
         "Password must contain at least one letter, one number, and one special character.",
     }),

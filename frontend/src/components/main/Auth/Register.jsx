@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import css from "./Login.module.css";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import {useDispatch, useSelector} from "react-redux";
 import { userRegister } from "../../../store/userAuthSlice";
-import { errorMessage, successMessage } from "../../../helper";
+import { errorMessage, successMessage } from "../../../utils/helper";
 
 function Register() {
   const [firstname, setFirstname] = useState("");
@@ -11,12 +11,12 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const {userData, error} = useSelector((store)=>store.userAuth)
 
   const dispatch = useDispatch();
-
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     const formData = {
       firstname,
@@ -25,15 +25,25 @@ function Register() {
       password,
     };
 
-    dispatch(userRegister(formData)).then((data)=>{
-      if(data?.payload?.success){
-        successMessage(data?.payload?.message);
-        navigate("/login")
-      } else {
-        errorMessage(data?.payload?.message)
-      }
-    });
+    try{
+      await dispatch(userRegister(formData));
+    } catch(err) {
+      console.log(err);
+      errorMessage("Registration failed.")
+    }
+
   };
+
+  useEffect(()=>{
+    if(userData?.success){
+      successMessage(userData?.message);
+      navigate("/login")
+    }
+
+    if(error){
+      errorMessage(error || "Somthing occured")
+    }
+  }, [userData, error, navigate])
 
 
   return (

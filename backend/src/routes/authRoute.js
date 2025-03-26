@@ -25,6 +25,6 @@ router.route("/logout").get(isLoggedIn, wrapAsync(userLogOutController));
 
 router.route("/profile").get(isLoggedIn, wrapAsync(userProfileController));
 
-router.route("/refreshtoken").post(wrapAsync(refreshTokenController))
+router.route("/refreshtoken").get(wrapAsync(refreshTokenController))
 
 module.exports = router;

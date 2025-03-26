@@ -13,22 +13,27 @@ import UnAuth from "./pages/common/unauth";
 import NotFound from "./pages/common/notfound";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { userProfile } from "./store/userAuthSlice";
+import { authChecker } from "./store/userAuthSlice";
 
 function App() {
-  const accessToken = localStorage.getItem("accessToken");
-
-  const { loading, success, data } = useSelector((store) => store.userAuth);
-
+  const { loading, isAuthenticated, userData , isInitialized} = useSelector((store)=>store.userAuth);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (accessToken) {
-      dispatch(userProfile());
+  useEffect(()=>{
+    const authCheck = async()=>{
+      try {
+        await dispatch(authChecker())
+      } catch (error) {
+        console.log(error)
+      }
     }
-  }, [accessToken, dispatch]);
 
-  
+    authCheck()
+  }, [ dispatch])
+
+  if (!isInitialized) {
+    return <div>Loading</div>;
+  }
 
   return (
     <>
@@ -40,7 +45,11 @@ function App() {
             <Route
               path="/"
               element={
-                <AuthChecker isAuthenticated={success} user={data} loading={loading}>
+                <AuthChecker
+                  isAuthenticated={isAuthenticated}
+                  user={userData}
+                  loading={loading}
+                >
                   <AuthLayout />
                 </AuthChecker>
               }
@@ -52,7 +61,11 @@ function App() {
             <Route
               path="/profile"
               element={
-                <AuthChecker isAuthenticated={success} user={data} loading={loading}>
+                <AuthChecker
+                  isAuthenticated={isAuthenticated}
+                  user={userData}
+                  loading={loading}
+                >
                   <UserProfile />
                 </AuthChecker>
               }
@@ -62,7 +75,11 @@ function App() {
           <Route
             path="/admin"
             element={
-              <AuthChecker isAuthenticated={success} user={data} loading={loading}>
+              <AuthChecker
+                isAuthenticated={isAuthenticated}
+                user={userData}
+                loading={loading}
+              >
                 <AdminLayout />
               </AuthChecker>
             }

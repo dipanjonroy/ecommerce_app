@@ -2,23 +2,21 @@ import { useEffect, useState } from "react";
 import css from "./Login.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { userLogin, userProfile } from "../../../store/userAuthSlice";
-import { errorMessage, successMessage } from "../../../helper";
+import { authChecker, userLogin } from "../../../store/userAuthSlice";
+import { errorMessage, successMessage } from "../../../utils/helper";
 
 function Login() {
   const [forgetPass, setForgetPass] = useState(false);
 
-  const { success, data } = useSelector((store) => store.userAuth);
-
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
 
-  const dispatch = useDispatch();
+  const { userData, error } = useSelector((store) => store.userAuth);
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     const loginData = {
@@ -26,23 +24,25 @@ function Login() {
       password,
     };
 
-    dispatch(userLogin(loginData))
-      .then((data) => {
-        if (data?.payload?.success) {
-          successMessage(data?.payload?.message);
-        }
-
-        if(data?.payload?.isAdmin){
-          navigate("/admin/dashboard", { replace: true });
-        } else {
-          navigate("/", { replace: true });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    try {
+      await dispatch(userLogin(loginData));
+    } catch (error) {
+      console.log(err);
+      errorMessage("Login failed.");
+    }
   };
-  
+
+  useEffect(() => {
+    if (userData?.success) {
+      successMessage(userData?.message);
+      navigate(userData?.isAdmin ? "/admin/dashboard" : "/", { replace: true });
+    }
+
+    if (error) {
+      errorMessage(error || "Somthing wrong occured!");
+    }
+  }, [userData, error, navigate]);
+
   return (
     <div className={css.authForm}>
       {forgetPass ? (

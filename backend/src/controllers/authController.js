@@ -46,15 +46,12 @@ module.exports.userLoginController = async (req, res) => {
   );
   res.cookie("refreshToken", refreshToken, {
     maxAge: 1000*60*60*24*7,
-    withCredentials: true,
     httpOnly: true,
     secure: false,
   });
 
   res.status(201).json({
     success: true,
-    accessToken,
-    refreshToken,
     isAdmin,
     message: "Logged in successfully.",
   });
@@ -82,9 +79,9 @@ module.exports.userProfileController = async (req, res) => {
 };
 
 module.exports.refreshTokenController = async(req,res)=>{
-  const {refreshtoken} =req.body;
+  const {refreshToken} =req.cookies;
   
-  const userId = await refreshTokenService(refreshtoken);
+  const userId = await refreshTokenService(refreshToken);
 
   const accessToken = createToken(
     { userId },
@@ -96,6 +93,7 @@ module.exports.refreshTokenController = async(req,res)=>{
     maxAge: 1000*60*5,
     httpOnly: true,
     secure: false,
+    sameSite: 'lax'
   });
 
   res.status(201).json({

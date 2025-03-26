@@ -5,15 +5,7 @@ import { useEffect, useState } from "react";
 
 function Header() {
  
-  const [isAuth, setIsAuth] = useState(false);
-
-  const {success, data} = useSelector((store)=>store.userAuth);
-
-  useEffect(()=>{
-    if(success){
-      setIsAuth(true)
-    }
-  })
+  const {isAuthenticated, userData} = useSelector((store)=>store.userAuth);
 
   return (
     <header id={css.header_area}>
@@ -38,10 +30,10 @@ function Header() {
               <div className={css.wishlistNum}>0</div>
             </div>
 
-            {isAuth ? (
+            {isAuthenticated ? (
               <div className={css.navigate}>
                 <i className="ri-user-line"></i>
-                <span>{data?.firstname}</span>
+                <span>{userData?.firstname}</span>
               </div>
             ) : (
               <div className={css.navigate}>
