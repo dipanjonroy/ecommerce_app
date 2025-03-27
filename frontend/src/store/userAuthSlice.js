@@ -74,22 +74,6 @@ export const logOut = createAsyncThunk(
   }
 );
 
-export const refreshToken = createAsyncThunk(
-  "auth/refreshtoken",
-  async (_, { rejectWithValue }) => {
-    try {
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_SERVER_URL}/auth/refreshtoken`,
-        { withCredentials: true }
-      );
-
-      return data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message);
-    }
-  }
-);
-
 const userAuthSlice = createSlice({
   name: "userAuth",
   initialState,
@@ -175,26 +159,6 @@ const userAuthSlice = createSlice({
 
       .addCase(logOut.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
-      })
-
-      //Refresh Token cases
-      .addCase(refreshToken.pending, (state) => {
-        state.loading = true;
-      })
-
-      .addCase(refreshToken.fulfilled, (state, action) => {
-        state.loading = false;
-        state.isAuthenticated = true;
-        state.isInitialized = true;
-        state.userData = null;
-      })
-
-      .addCase(refreshToken.rejected, (state, action) => {
-        state.loading = false;
-        state.isAuthenticated = false;
-        state.isInitialized = true;
-        state.userData = null;
         state.error = action.payload;
       });
   },

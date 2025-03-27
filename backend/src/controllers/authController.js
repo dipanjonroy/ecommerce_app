@@ -78,25 +78,3 @@ module.exports.userProfileController = async (req, res) => {
   });
 };
 
-module.exports.refreshTokenController = async(req,res)=>{
-  const {refreshToken} =req.cookies;
-  
-  const userId = await refreshTokenService(refreshToken);
-
-  const accessToken = createToken(
-    { userId },
-    process.env.JWT_ACCESS_TOKEN_KEY,
-    "5m"
-  );
-
-  res.cookie("accessToken", accessToken, {
-    maxAge: 1000*60*5,
-    httpOnly: true,
-    secure: false,
-    sameSite: 'lax'
-  });
-
-  res.status(201).json({
-    accessToken
-  })
-}
